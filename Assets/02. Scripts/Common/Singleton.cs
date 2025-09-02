@@ -11,7 +11,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : Component
         {
             if (_instance == null)
             {
-                _instance = FindAnyObjectByType<T>();
+                _instance = FindFirstObjectByType<T>();
                 if (_instance == null)
                 {
                     GameObject obj = new GameObject();
@@ -29,6 +29,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : Component
         if(_instance == null)
         {
             _instance = this as T;
+            if(transform.parent != null)
+            {
+                transform.SetParent(null);
+            }
             DontDestroyOnLoad(gameObject);
 
             SceneManager.sceneLoaded += OnSceneLoad;
