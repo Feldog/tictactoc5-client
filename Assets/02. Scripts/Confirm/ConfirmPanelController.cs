@@ -8,17 +8,17 @@ public class ConfirmPanelController : PanelController
 {
     [SerializeField] private TMP_Text messageText;
     [SerializeField] private Button confirmButton;
+    
+    public delegate void OnConfirmButtonClicked();
+    private OnConfirmButtonClicked _onConfirmButtonClicked;
 
     /// <summary>
     /// Confirm Panel을 표시하는 메서드
     /// </summary>
-    public void Show(string message, UnityAction action)
+    public void Show(string message, OnConfirmButtonClicked onConfirmButtonClicked)
     {
         messageText.text = message;
-
-        // Confirm 이벤트 추가
-        confirmButton.onClick.AddListener(action);
-        
+        _onConfirmButtonClicked = onConfirmButtonClicked;
         base.Show();
     }
 
@@ -27,7 +27,7 @@ public class ConfirmPanelController : PanelController
     /// </summary>
     public void OnClickConfirmButton()
     {
-        base.Hide();
+        base.Hide( () => _onConfirmButtonClicked?.Invoke() );
     }
 
     /// <summary>

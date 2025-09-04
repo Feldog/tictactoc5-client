@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
@@ -10,6 +9,14 @@ public class GameManager : Singleton<GameManager>
 
     // Panel을 띄우기 위한 Canvas 정보
     private Canvas _canvas;
+
+    // confirmPanel 저장 (Don't Destroy)
+    private GameObject confirmPanelObject;
+
+    // Game Logic
+    private GameLogic _gameLogic;
+
+    private GameUIController _gameUiConroller;
 
     /// <summary>
     /// Main에서 Game Scene으로 전환시 호출될 메서드
@@ -33,18 +40,58 @@ public class GameManager : Singleton<GameManager>
     /// Confirm Panel을 띄우는 메서드
     /// </summary>
     /// <param name="message"></param>
-    public void OpenConfirmPanel(string message, UnityAction action)
+    public void OpenConfirmPanel(string message, ConfirmPanelController.OnConfirmButtonClicked onConfirmButtonClicked)
     {
         if(_canvas != null)
         {
-            var confirmPanelObject = Instantiate(confirmPanel, _canvas.transform);
-            confirmPanelObject.GetComponent<ConfirmPanelController>().Show("게임을 종료하시겠습니까?", action);
+            if (confirmPanelObject == null)
+            {
+                confirmPanelObject = Instantiate(confirmPanel, _canvas.transform);
+            }
+
+            confirmPanelObject.GetComponent<ConfirmPanelController>().Show("게임을 종료하시겠습니까?", onConfirmButtonClicked);
         }
+    }
+
+    /// <summary>
+    /// Game Scene에서 턴을 표시하는 UI를 제어하는 함수
+    /// </summary>
+    /// <param name="gameTurnPanelType">표시할 Turn 정보</param>
+    public void SetGameTurnPanel(GameUIController.GameTurnPanelType gameTurnPanelType)
+    {
+        _gameUiConroller.SetGameTurnPanel(gameTurnPanelType);
     }
 
     protected override void OnSceneLoad(Scene scene, LoadSceneMode mode)
     {
         _canvas = FindFirstObjectByType<Canvas>();
+
+        if(scene.name == "Game")
+        {
+            // Block 초기화
+            var blockController = FindFirstObjectByType<BlockController>();
+            if (blockController != null)
+            {
+                blockController.InitBlocks();
+            }
+            else
+            {
+                // TODO: 오류 팝업을 표시하고 게임을 종료
+            }
+
+            _gameUiConroller = FindFirstObjectByType<GameUIController>();
+            if(_gameUiConroller != null)
+            {
+                _gameUiConroller.SetGameTurnPanel(GameUIController.GameTurnPanelType.None);
+            }
+
+            if(_gameLogic != null)
+            {
+                // 기존 게임의 로직을 소멸
+            }
+
+            _gameLogic = new GameLogic(blockController, _gameType);
+        }
     }
 
 }

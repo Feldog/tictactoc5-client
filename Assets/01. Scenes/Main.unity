@@ -687,6 +687,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   confirmPanel: {fileID: 8981771677072126804, guid: 7614be6d530c31348beed69f116a034f, type: 3}
+  confirmPanelObject: {fileID: 0}
 --- !u!1 &826422642
 GameObject:
   m_ObjectHideFlags: 0
