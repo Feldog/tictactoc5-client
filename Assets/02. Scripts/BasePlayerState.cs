@@ -1,4 +1,5 @@
 using UnityEngine;
+using static Constants;
 
 public abstract class BasePlayerState
 {
@@ -10,6 +11,8 @@ public abstract class BasePlayerState
     // 게임 결과 처리
     protected void ProcessMove(GameLogic gameLogic, Constants.PlayerType playerType, int row, int col)
     {
+        gameLogic.SetNewBoardValue(playerType, row, col);
+
         // 새로 놓아진 마커 기준으로 게임 결과 처리
         var gameResult = gameLogic.CheckGameResult();
         if(gameResult == GameLogic.GameResult.None)

@@ -39,7 +39,7 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// Confirm Panel을 띄우는 메서드
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">팝업 메시지</param>
     public void OpenConfirmPanel(string message, ConfirmPanelController.OnConfirmButtonClicked onConfirmButtonClicked)
     {
         if(_canvas != null)
@@ -49,7 +49,7 @@ public class GameManager : Singleton<GameManager>
                 confirmPanelObject = Instantiate(confirmPanel, _canvas.transform);
             }
 
-            confirmPanelObject.GetComponent<ConfirmPanelController>().Show("게임을 종료하시겠습니까?", onConfirmButtonClicked);
+            confirmPanelObject.GetComponent<ConfirmPanelController>().Show(message, onConfirmButtonClicked);
         }
     }
 

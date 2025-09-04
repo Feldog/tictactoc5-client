@@ -23,6 +23,10 @@ public class GameLogic
         switch (gameType)
         {
             case Constants.GameType.SinglePlay:
+                firstPlayerState = new PlayerState(true);
+                secondPlayerState = new AIState();
+
+                SetState(firstPlayerState);
                 break;
             case Constants.GameType.DualPlay:
                 firstPlayerState = new PlayerState(true);
@@ -44,6 +48,7 @@ public class GameLogic
         _currentPlayerState = state;
         _currentPlayerState?.OnEnter(this);
     }
+    public Constants.PlayerType[,] GetBoard() { return _board; }
 
     // _board 배열에 새로운 marker를 지정
     public bool SetNewBoardValue(Constants.PlayerType playerType, int row, int col)
@@ -65,31 +70,32 @@ public class GameLogic
         return false;
     }
 
+
     public void EndGame(GameResult gameResult)
     {
-        // TODO: Game Logic 정리
         SetState(null);
         firstPlayerState = null;
         secondPlayerState = null;
 
-
-        // TODO: 유저에게 Game Over 표시
-        Debug.Log("<color=green> ### GAME OVER ### </color>");
+        GameManager.Instance.OpenConfirmPanel("게임오버", () =>
+        {
+            GameManager.Instance.ChangeToMainScene();
+        });
     }
 
     // 게임의 결과를 확인 하는 함수
     public GameResult CheckGameResult()
     {
-        if(CheckGameWin(Constants.PlayerType.PlayerA, _board))
+        if(TicTacToeAI.CheckGameWin(Constants.PlayerType.PlayerA, _board))
         {
             return GameResult.Win;
         }
-        if(CheckGameWin(Constants.PlayerType.PlayerB, _board))
+        if(TicTacToeAI.CheckGameWin(Constants.PlayerType.PlayerB, _board))
         {
             return GameResult.Lose;
         }
 
-        if(CheckGameDraw(_board))
+        if(TicTacToeAI.CheckGameDraw(_board))
         {
             return GameResult.Draw;
         }
@@ -98,55 +104,4 @@ public class GameLogic
         return GameResult.None;
     }
 
-    private bool CheckGameWin(Constants.PlayerType playerType, Constants.PlayerType[,] board)
-    {
-        // Col 체크 후 일자면 True
-        for (var row = 0; row < board.GetLength(0); row++)
-        {
-            if (board[row, 0] == playerType &&
-                board[row, 1] == playerType &&
-                board[row, 2] == playerType)
-            {
-                return true;
-            }
-        }
-        // Row 체크 후 일자면 True
-        for (var col = 0; col < board.GetLength(1); col++)
-        {
-            if (board[0, col] == playerType &&
-                board[1, col] == playerType &&
-                board[2, col] == playerType)
-            {
-                return true;
-            }
-        }
-        // 대각선 체크 후 일자면 True
-        if (board[0,0] == playerType &&
-            board[1,1] == playerType &&
-            board[2,2] == playerType)
-        {
-            return true;
-        }
-
-        if (board[0,2] == playerType &&
-            board[1,1] == playerType &&
-            board[2,0] == playerType)
-        {
-            return true;
-        }
-
-        return false;
-    }
-    private bool CheckGameDraw(Constants.PlayerType[,] board)
-    {
-        for(var row = 0; row < board.GetLength(0); row++)
-        {
-            for (var col = 0;col < board.GetLength(1); col++)
-            {
-                if (board[row, col] == Constants.PlayerType.None) return false;
-            }
-        }
-
-        return true;
-    }
 }
